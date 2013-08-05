@@ -1,0 +1,12 @@
+{application, isucon3,
+ [
+  {description, "isucon3"},
+  {vsn, "1"},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib
+                 ]},
+  {mod, { isucon3_app, []}},
+  {env, []}
+ ]}.
