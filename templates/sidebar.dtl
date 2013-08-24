@@ -1,0 +1,14 @@
+<div class="span3">
+	<div class="well sidebar-nav">
+		<ul class="nav nav-list">
+			<li class="nav-header">Recent Posts</li>
+			{% for post in recent_posts %}
+			<li>
+				<a href="/post/{{ post.id }}"><i class="icon-file"></i>{{ post.headline|slice:":20" }}{% if post.headline|length > 20 %}...{% endif %} by {{ post.username }}
+				  {% if post.stars > 0 %}<i class="icon-star"></i>{{ post.stars }}{% endif %}
+				</a>
+			</li>
+			{% endfor %}
+		</ul>
+	</div><!--/.well -->
+</div><!--/span-->
