@@ -2,7 +2,6 @@
 -export([get_field/2]).
 -export([not_null/1, semi_ascii/1, ascii/1, no_duplicate/1, is_same/2]).
 -export([get_password_confirm_error/2, get_errors/1]).
-
 -include("include/user.hrl").
 
 get_field(id, U) when is_record(U, user) ->
@@ -67,14 +66,11 @@ get_password_confirm_error(V1, V2) ->
 get_error_acc(_U, [], E) ->
     E;
 get_error_acc(U, [Q|T], E) ->
-    io:format("q: ~p~n", [Q]),
     {Field, Test} = Q,
     case apply(?MODULE, Test, [get_field(Field, U)]) of
         true ->
-            io:format("true~n", []),
             get_error_acc(U, T, E);
         false ->
-            io:format("true~n", []),
             get_error_acc(U, T, [{Field, Test}|E])
     end.
 

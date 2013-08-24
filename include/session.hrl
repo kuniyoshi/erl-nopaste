@@ -1,3 +1,4 @@
 -record(session,
         {id,
-         user_id}).
+         user_id,
+         lives_until}).

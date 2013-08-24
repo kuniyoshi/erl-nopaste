@@ -2,9 +2,7 @@
 -export([respond/4]).
 
 respond(_Code, _Headers, Body, Req) ->
-%    io:format("on response!!!!!!!!~n", []),
     {Cookie, Req2} = cowboy_req:cookie(isucon3_config:get(cookie), Req),
-%    io:format("Cookie: ~p~n", [Cookie]),
     case Cookie of
         undefined ->
             Req2 = cowboy_req:set_resp_cookie(isucon3_config:get(cookie),
