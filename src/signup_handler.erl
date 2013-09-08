@@ -18,8 +18,9 @@ handle(Req, State) ->
     end.
 
 handle_get(Req, State) ->
+    io:format("singup_handler:handle_get~n", []),
     {ok, Body} = signup_dtl:render([]),
-    {ok, Req2} = cowboy_req:reply(200, [], Body, Req),
+    Req2 = cowboy_req:set_resp_body(Body, Req),
     {ok, Req2, State}.
 
 get_errors(Req) ->

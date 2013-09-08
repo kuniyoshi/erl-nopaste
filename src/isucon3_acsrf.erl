@@ -1,15 +1,21 @@
 -module(isucon3_acsrf).
--export([respond/4]).
+-export([execute/2]).
+-include("user.hrl").
 
-respond(_Code, _Headers, Body, Req) ->
+execute(Req, Env) ->
     {Cookie, Req2} = cowboy_req:cookie(isucon3_config:get(cookie), Req),
+    io:format("Cookie: ~p~n", [Cookie]),
     case Cookie of
         undefined ->
-            Req2 = cowboy_req:set_resp_cookie(isucon3_config:get(cookie),
-                                              integer_to_list(isucon3_session:gen_id())),
-            Req2;
+            Req3 = isucon3_session:set_cookie(Req2),
+%            io:format("Req3: ~p~n", [Req3]),
+            io:format("Env: ~p~n", [Env]),
+            {ok, Req3, Env};
         Val ->
-            Body2 = acsrf:hide(Body, Val),
-            Req2 = cowboy_req:set_resp_body(Body2, Req2),
-            Req2
+            io:format("NO MORE UNDEFINED~n", []),
+            Key = Val,
+            Body = cowboy_req:get(resp_body, Req),
+            Body2 = acsrf:hide(Body, Key),
+            Req3 = cowboy_req:set_resp_body(Body2, Req2),
+            Req3
     end.

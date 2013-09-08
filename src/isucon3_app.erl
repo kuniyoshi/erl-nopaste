@@ -16,7 +16,11 @@ start(_Type, _Args) ->
                                 isucon3_config:get(child),
                                 [{port, isucon3_config:get(port)}],
                                 [{env, [{dispatch, Dispatch}]},
-                                 {onresponse, fun isucon3_acsrf:respond/4}]),
+                                 {middlewares, [cowboy_router,
+                                                isucon3_session,
+                                                cowboy_handler,
+                                                isucon3_acsrf,
+                                                isucon3_reply]}]),
     isucon3_sup:start_link().
 
 stop(_State) ->
