@@ -13,16 +13,11 @@ start(_Type, _Args) ->
                                         {"/", index_handler, []},
                                         {"/index.html", index_handler, []}]}]),
     {ok, _} = cowboy:start_http(http,
-                                isucon3_config:get(child),
-                                [{port, isucon3_config:get(port)}],
+                                isucon3_config:child(),
+                                [{port, isucon3_config:port()}],
                                 [{env, [{dispatch, Dispatch}]},
-                                 {middlewares, [cowboy_router,
-                                                isucon3_session,
-                                                cowboy_handler,
-                                                isucon3_acsrf,
-                                                isucon3_reply]}]),
+                                 {onresponse, fun isucon3_acsrf:protect/4}]),
     isucon3_sup:start_link().
 
 stop(_State) ->
-    ok = application:stop(mnesia),
     ok.

@@ -3,6 +3,7 @@
 -export([handle/2]).
 -export([terminate/3]).
 -include("include/user.hrl").
+-include_lib("eunit/include/eunit.hrl").
 
 init(_Transport, Req, []) ->
     {ok, Req, undefined}.
@@ -20,7 +21,7 @@ handle(Req, State) ->
 handle_get(Req, State) ->
     io:format("singup_handler:handle_get~n", []),
     {ok, Body} = signup_dtl:render([]),
-    Req2 = cowboy_req:set_resp_body(Body, Req),
+    Req2 = cowboy_req:reply(200, [], Body, Req),
     {ok, Req2, State}.
 
 get_errors(Req) ->
@@ -28,7 +29,7 @@ get_errors(Req) ->
     Username = binary_to_list(proplists:get_value(<<"username">>, Qs)),
     Password = binary_to_list(proplists:get_value(<<"password">>, Qs)),
     PasswordConfirm = binary_to_list(proplists:get_value(<<"password_confirm">>, Qs)),
-    User = #user{username=Username, password=Password},
+    User = #user{username = Username, password = Password},
     Errors = isucon3_user:get_errors(User),
     Error  = isucon3_user:get_password_confirm_error(Password, PasswordConfirm),
     Errors2 = Error ++ Errors,
@@ -38,7 +39,7 @@ get_errors(Req) ->
 
 handle_post(Req, State, []) ->
     SessionId = integer_to_list(isucon3_session:gen_id()),
-    Req2 = cowboy_req:set_resp_cookie(isucon3_config:get(cookie),
+    Req2 = cowboy_req:set_resp_cookie(isucon3_config:cookie(),
                                       SessionId,
                                       [{path, <<"/">>}],
                                       Req),
@@ -48,8 +49,8 @@ handle_post(Req, State, []) ->
                                   Req2),
     {ok, Req3, State};
 handle_post(Req, State, Errors) ->
-    {ok, Q, Req2} = cowboy_req:body_qs(isucon3_config:get(max_post_size), Req),
-    Q2 = [{errors, Errors}|Q],
+    {ok, Q, Req2} = cowboy_req:body_qs(isucon3_config:max_post_size(), Req),
+    Q2 = [{errors, Errors} | Q],
     {ok, Body} = signup_dtl:render(Q2),
     {ok, Req3} = cowboy_req:reply(200, [], Body, Req2),
     {ok, Req3, State}.

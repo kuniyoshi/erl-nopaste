@@ -3,7 +3,7 @@
 -export([restore_cookie/1]).
 -export([execute/2]).
 -include("session.hrl").
--define(MAX_RANDOM_NUMBER, 10000000000000). %% TODO: No reason exists yet, calc. and get reason.
+-define(MAX_RANDOM_NUMBER, 10000000000000).
 
 has_been_expired(#session{lives_until=LivesUntil}) ->
     LivesUntil < calendar:datetime_to_gregorian_seconds(calendar:local_time()).
@@ -33,11 +33,11 @@ get_id(Retries) when is_integer(Retries), Retries > 0 ->
 
 set_cookie(Req) ->
     Id = gen_id(),
-    Req2 = cowboy_req:set_resp_cookie(isucon3_config:get(cookie),
+    Req2 = cowboy_req:set_resp_cookie(isucon3_config:cookie(),
                                       Id,
                                       [{path, <<"/">>}],
                                       Req),
-    {Id, Req2}.
+    Req2.
 
 restore_cookie(Req) ->
     Req,
@@ -46,7 +46,7 @@ restore_cookie(Req) ->
 %% cowboy handler function.
 execute(Req, Env) ->
     io:format("~p:execute/2~n", [?MODULE]),
-    {Cookie, Req2} = cowboy_req:cookie(isucon3_config:get(cookie), Req),
+    {Cookie, Req2} = cowboy_req:cookie(isucon3_config:cookie(), Req),
     io:format("Cookie: ~p~n", [Cookie]),
     case Cookie of
         undefined ->
@@ -55,6 +55,6 @@ execute(Req, Env) ->
             Env2 = lists:keystore(session, 1, Env, {session, Session}),
             {ok, Req3, Env2};
         Val ->
-            Session = mnesia:dirty_read(session, Val),
+            _Session = mnesia:dirty_read(session, Val),
             {ok, Req2, Env}
     end.

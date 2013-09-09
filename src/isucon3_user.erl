@@ -4,19 +4,13 @@
 -export([get_password_confirm_error/2, get_errors/1]).
 -include("include/user.hrl").
 
-get_field(id, U) when is_record(U, user) ->
-    U#user.id;
-get_field(username, U) when is_record(U, user) ->
-    U#user.username;
-get_field(password, U) when is_record(U, user) ->
-    U#user.password.
+get_field(id,       #user{id=Ret})          -> Ret;
+get_field(username, #user{username=Ret})    -> Ret;
+get_field(password, #user{password=Ret})    -> Ret.
 
-not_null([]) ->
-    false;
-not_null(undefined) ->
-    false;
-not_null(_Name) ->
-    true.
+not_null([])        -> false;
+not_null(undefined) -> false;
+not_null(_Name)     -> true.
 
 semi_ascii(undefined) ->
     false;

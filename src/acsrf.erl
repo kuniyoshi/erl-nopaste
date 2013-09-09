@@ -10,6 +10,12 @@ encrypt(Data) ->
 encrypt(Data, Key) ->
     base64:encode(crypto:hmac(sha256, Key, Data)).
 
+protection_tag(AcsrfName, Encrypted) ->
+    OpenTag = <<"<input type=\"hidden\" name=\"">>,
+    Attribute = <<"\" value=\"">>,
+    CloseTag = <<"\"></form>">>,
+    <<OpenTag/binary, AcsrfName/binary, Attribute/binary, Encrypted/binary, CloseTag/binary>>.
+
 hide(Html, Key) ->
     hide(Html, Key, []).
 
@@ -18,11 +24,6 @@ hide(Html, Key, Options) ->
     {acsrf_key, AcsrfKey} = lists:keyfind(acsrf_key, 1, Options2),
     {acsrf_name, AcsrfName} = lists:keyfind(acsrf_name, 1, Options2),
     Encrypted = ?MODULE:encrypt(Key, AcsrfKey),
-    re:replace(Html,
-               <<"[<]/form[>]">>,
-               [<<"<input type=\"hidden\" name=\"">>,
-                AcsrfName,
-                <<"\" value=\"">>,
-                Encrypted,
-                <<"\"</form>">>],
-               [global]).
+    Replaced = protection_tag(AcsrfName, Encrypted),
+    Html2 = binary:replace(Html, <<"</form>">>, Replaced, [global]),
+    Html2.
