@@ -2,6 +2,7 @@
 -export([init/3]).
 -export([handle_validate/2, handle_post/3, handle/2]).
 -export([terminate/3]).
+-include_lib("eunit/include/eunit.hrl").
 
 init(_Transport, Req, State) ->
     {ok, Req, State}.
@@ -9,7 +10,10 @@ init(_Transport, Req, State) ->
 handle_validate(Req, State) ->
     {ok, Qs, _Req2} = cowboy_req:body_qs(isucon3_config:max_post_size(), Req),
     User = isucon3_user:new_from_query_string(Qs),
-    {Req, [{user, User} | State], isucon3_user:can_signin(User)}.
+    User2 = isucon3_user:get_from_query(User),
+    ?debugVal(User),
+    ?debugVal(User2),
+    {Req, [{user, User2} | State], isucon3_user:can_signin(User2, User)}.
 
 handle_post(Req, State, true) ->
     User = proplists:get_value(user, State),

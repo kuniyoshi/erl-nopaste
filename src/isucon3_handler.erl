@@ -6,7 +6,11 @@
 
 init(Transport, Req, [Module, [] = Args]) ->
     {Method, Req2} = cowboy_req:method(Req),
-    Args2 = [{module, Module}, {method, Method}],
+    Session = isucon3_session:get_session(Req),
+    ?debugVal(Session),
+    User = isucon3_user:get_user(Session),
+    ?debugVal(User),
+    Args2 = [{module, Module}, {method, Method}, {user, User}],
     Args3 = lists:keymerge(1, Args, Args2),
     ?debugVal(Args3),
     Module:init(Transport, Req2, Args3).

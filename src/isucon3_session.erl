@@ -2,6 +2,7 @@
 -export([gen_anonymous_cookie/0]).
 -export([id_to_cookie/1]).
 -export([signin/2]).
+-export([get_session/1]).
 -include("user.hrl").
 -include("session.hrl").
 -define(MAX_RANDOM_NUMBER, 10000000000000000).
@@ -23,7 +24,7 @@ gen_anonymous_cookie() ->
     id_to_cookie(gen_id()).
 
 get_lifetime() ->
-    calendar:datetime_to_gregorian_seconds(erlang:localtime()) + isucon3_config:lifetime().
+    calendar:datetime_to_gregorian_seconds(calendar:local_time()) + isucon3_config:lifetime().
 
 set_cookie(Req, Id) ->
     ?debugVal(Id),
@@ -41,25 +42,17 @@ signin(#user{id = UserId}, Req) ->
                                     lives_until = LivesUntil}),
     set_cookie(Req, SessionId).
 
-%% has_been_expired(#session{lives_until=LivesUntil}) ->
-%%     LivesUntil < calendar:datetime_to_gregorian_seconds(calendar:local_time()).
-%% 
-%% restore_cookie(Req) ->
-%%     Req,
-%%     todo.
-%% 
-%% %% cowboy handler function.
-%% execute(Req, Env) ->
-%%     io:format("~p:execute/2~n", [?MODULE]),
-%%     {Cookie, Req2} = cowboy_req:cookie(isucon3_config:cookie(), Req),
-%%     io:format("Cookie: ~p~n", [Cookie]),
-%%     case Cookie of
-%%         undefined ->
-%%             {Id, Req3} = set_cookie(Req2),
-%%             Session = #session{id=Id, user_id=anonymous},
-%%             Env2 = lists:keystore(session, 1, Env, {session, Session}),
-%%             {ok, Req3, Env2};
-%%         Val ->
-%%             _Session = mnesia:dirty_read(session, Val),
-%%             {ok, Req2, Env}
-%%     end.
+sanitize_session([]) ->
+    undefined;
+sanitize_session([#session{lives_until = LivesUntil} = Session]) ->
+    case LivesUntil > calendar:datetime_to_gregorian_seconds(calendar:local_time()) of
+        true ->
+            Session;
+        false ->
+            sanitize_session([])
+    end.
+
+get_session(Req) ->
+    {Cookie, _Req2} = cowboy_req:cookie(isucon3_config:cookie(), Req),
+    ?debugVal(Cookie),
+    sanitize_session(isucon3_db:q(dirty_read, [session, Cookie])).
