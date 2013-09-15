@@ -1,6 +1,7 @@
 -module(isucon3_url).
 -export([url_for/1]).
 
+%% TODO: Need escape.
 url_for(Path) when is_binary(Path) ->
     Scheme = <<"http">>,
     Sep1 = <<"://">>,

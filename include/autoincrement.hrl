@@ -1,0 +1,1 @@
+-record(autoincrement, {table, id}).

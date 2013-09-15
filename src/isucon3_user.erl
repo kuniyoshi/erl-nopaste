@@ -1,77 +1,87 @@
 -module(isucon3_user).
--export([get_field/2]).
--export([not_null/1, semi_ascii/1, ascii/1, no_duplicate/1, is_same/2]).
--export([get_password_confirm_error/2, get_errors/1]).
+-export([no_duplicate/1]).
+-export([get_errors/2]).
+-export([new_from_query_string/1]).
+-export([add_user/1]).
+-export([can_signin/1]).
 -include("include/user.hrl").
+-include_lib("eunit/include/eunit.hrl").
+-define(PKEY, <<"zErsG3DoWVBW1jBhZ0VzaY5dzuwvSgPx">>).
 
-get_field(id,       #user{id=Ret})          -> Ret;
-get_field(username, #user{username=Ret})    -> Ret;
-get_field(password, #user{password=Ret})    -> Ret.
-
-not_null([])        -> false;
-not_null(undefined) -> false;
-not_null(_Name)     -> true.
-
-semi_ascii(undefined) ->
-    false;
-semi_ascii(S) ->
-    {ok, M} = re:compile("^[A-Za-z0-9]{2,20}$"),
-    case re:run(S, M) of
-        {match, _Place} ->
-            true;
-        nomatch ->
-            false
-    end.
-
-ascii(undefined) ->
-    false;
-ascii(S) ->
-    {ok, M} = re:compile("^[\x21-\x7E]{2,20}$"),
-    case re:run(S, M) of
-        {match, _Place} ->
-            true;
-        nomatch ->
-            false
-    end.
+get_field(id,       #user{id = Ret})        -> Ret;
+get_field(username, #user{username = Ret})  -> Ret;
+get_field(password, #user{password = Ret})  -> Ret.
 
 no_duplicate(undefined) ->
     true;
 no_duplicate(Name) ->
-    case mnesia:dirty_match_object(#user{id='_', username=Name, password='_'}) of
+    case isucon3_db:q(dirty_index_read, [user, Name, username]) of
         [] ->
             true;
         [_] ->
             false
     end.
 
-is_same(_Val, _Val) ->
-    true;
-is_same(_Val1, _Val2) ->
-    false.
+get_error_acc(_U, [], E) ->
+    E;
+get_error_acc(U, [Q | T], E) ->
+    {Field, TestName, Test} = Q,
+    FieldValue = get_field(Field, U),
+    ?debugVal({Field, FieldValue, TestName, Test}),
+    case Test(FieldValue) of
+        true ->
+            get_error_acc(U, T, E);
+        false ->
+            get_error_acc(U, T, [{Field, TestName} | E])
+    end.
+
+get_errors(U) when is_record(U, user) ->
+    get_error_acc(U,
+                  [{username, not_null, fun form_validator:not_null/1},
+                   {username, semi_ascii, fun form_validator:semi_ascii/1},
+                   {password, ascii, fun form_validator:ascii/1},
+                   {username, no_duplicate, fun ?MODULE:no_duplicate/1}],
+                  []).
 
 get_password_confirm_error(V1, V2) ->
-    case is_same(V1, V2) of
+    case form_validator:is_same(V1, V2) of
         true ->
             [];
         false ->
             [{password, is_same}]
     end.
 
-get_error_acc(_U, [], E) ->
-    E;
-get_error_acc(U, [Q|T], E) ->
-    {Field, Test} = Q,
-    case apply(?MODULE, Test, [get_field(Field, U)]) of
-        true ->
-            get_error_acc(U, T, E);
-        false ->
-            get_error_acc(U, T, [{Field, Test}|E])
-    end.
+get_errors(User, PasswordConfirm) ->
+    Errors = get_errors(User),
+    ?debugVal(Errors),
+    Error  = get_password_confirm_error(User#user.password, PasswordConfirm),
+    ?debugVal(Error),
+    Errors2 = Error ++ Errors,
+    Keys = lists:usort([K || {K, _V} <- Errors2]),
+    Errors3 = [{K, [V || {Key, V} <- Errors2, Key == K]} || K <- Keys],
+    Errors3.
 
-get_errors(U) when is_record(U, user) ->
-    get_error_acc(U,
-                  [{username, not_null},
-                   {username, semi_ascii},
-                   {password, ascii},
-                   {username, no_duplicate}],
-                  []).
+new_from_query_string(Qs) ->
+    Username = binary_to_list(proplists:get_value(<<"username">>, Qs)),
+    ?debugVal(Username),
+    Password = binary_to_list(proplists:get_value(<<"password">>, Qs)),
+    ?debugVal(Password),
+    User = #user{username = Username, password = Password},
+    User.
+
+hmac(Data) ->
+    crypto:hmac(sha256, ?PKEY, Data).
+
+add_user(User) when is_record(User, user) ->
+    User2 = User#user{password = hmac(User#user.password)},
+    User3 = isucon3_db:add_user(User2),
+    User3.
+
+can_signin(User) when is_record(User, user) ->
+    User2 = isucon3_db:q(dirty_index_read, [user, User#user.username, username]),
+    case User2 of
+        [] ->
+            false;
+        [#user{password = Password}] ->
+            hmac(User#user.password) =:= Password
+    end.

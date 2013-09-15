@@ -2,6 +2,7 @@
 -export([init/3]).
 -export([handle/2]).
 -export([terminate/3]).
+-include_lib("eunit/include/eunit.hrl").
 
 init(_Transport, Req, []) ->
     {ok, Req, undefined}.

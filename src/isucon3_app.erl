@@ -3,6 +3,7 @@
 -export([start/2, stop/1]).
 
 start(_Type, _Args) ->
+    pong = net_adm:ping(isucon3_config:db_node()),
     Dispatch = cowboy_router:compile([{'_',
                                        [{"/static/[...]",
                                          cowboy_static,
@@ -16,6 +17,7 @@ start(_Type, _Args) ->
                                 isucon3_config:child(),
                                 [{port, isucon3_config:port()}],
                                 [{env, [{dispatch, Dispatch}]},
+                                 {onrequest, fun isucon3_acsrf:protect/1},
                                  {onresponse, fun isucon3_acsrf:protect/4}]),
     isucon3_sup:start_link().
 

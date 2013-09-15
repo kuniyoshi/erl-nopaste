@@ -43,7 +43,7 @@
 			<input type="text" class="input-block-level" placeholder="username" name="username" value="{{ username|escape }}">
 			{% for error in errors.username %}
 			<span class="help-inline">
-				{% if error == "EXISTS" %}
+				{% if error == "no_duplicate" %}
 				Already exists
 				{% else %}
 				{{ error }}
@@ -57,11 +57,11 @@
 			<input type="password" class="input-block-level" placeholder="password confirm" name="password_confirm" value="{{ password_confirm|escape }}">
 			{% for error in errors.password %}
 			<span class="help-inline">
-				{% if error == "NOT_NULL" %}
+				{% if error == "not_null" %}
 				Required
-				{% elif error == "EQUAL" %}
+				{% elif error == "is_same" %}
 				Confirm mismatch
-				{% elif error == "LENGTH" %}
+				{% elif error == "length" %}
 				Invalid length
 				{% else %}
 				{{ error }}

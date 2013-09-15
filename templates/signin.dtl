@@ -40,11 +40,9 @@
 		<div class="control-group{% if login_error %} error{% endif %}">
 			<input type="text" class="input-block-level" placeholder="username" name="username">
 			<input type="password" class="input-block-level" placeholder="password" name="password">
-
-{% for error in errors %}
-			<span class="help-inline">{{ error }}</span>
-{% endfor %}
-
+{% if login_error %}
+			<span class="help-inline">FAILED</span>
+{% endif %}
 		</div>
 		<button class="btn btn-large btn-primary" type="submit">Sign in</button>
 		<a href="/signup" class="btn btn-info btn-small">Sign up now!!!</a>
