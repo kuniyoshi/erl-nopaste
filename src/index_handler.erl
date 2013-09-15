@@ -4,8 +4,9 @@
 -export([terminate/3]).
 -include_lib("eunit/include/eunit.hrl").
 
-init(_Transport, Req, []) ->
-    {ok, Req, undefined}.
+init(_Transport, Req, State) ->
+    ?debugVal(State),
+    {ok, Req, State}.
 
 handle(Req, State) ->
     {ok, Body} = index_dtl:render([]),

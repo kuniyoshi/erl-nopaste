@@ -1,20 +1,15 @@
 -module(signin_handler).
 -export([init/3]).
--export([handle/2]).
+-export([handle_validate/2, handle_post/3, handle/2]).
 -export([terminate/3]).
 
-init(_Transport, Req, []) ->
-    {Method, Req2} = cowboy_req:method(Req),
-    {ok, Req2, [{method, Method}]}.
+init(_Transport, Req, State) ->
+    {ok, Req, State}.
 
-handle(Req, [{method, <<"POST">>}] = State) ->
+handle_validate(Req, State) ->
     {ok, Qs, _Req2} = cowboy_req:body_qs(isucon3_config:max_post_size(), Req),
     User = isucon3_user:new_from_query_string(Qs),
-    handle_post(Req, [{user, User} | State], isucon3_user:can_signin(User));
-handle(Req, State) ->
-    {ok, Body} = signin_dtl:render([]),
-    {ok, Req2} = cowboy_req:reply(200, [], Body, Req),
-    {ok, Req2, State}.
+    {Req, [{user, User} | State], isucon3_user:can_signin(User)}.
 
 handle_post(Req, State, true) ->
     User = proplists:get_value(user, State),
@@ -30,6 +25,11 @@ handle_post(Req, State, false) ->
     {ok, Body} = signin_dtl:render(Q2),
     {ok, Req3} = cowboy_req:reply(200, [], Body, Req2),
     {ok, Req3, State}.
+
+handle(Req, State) ->
+    {ok, Body} = signin_dtl:render([]),
+    {ok, Req2} = cowboy_req:reply(200, [], Body, Req),
+    {ok, Req2, State}.
 
 terminate(_Reason, _Req, _State) ->
     ok.

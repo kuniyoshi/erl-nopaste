@@ -1,15 +1,14 @@
 -module(signup_handler).
 -export([init/3]).
--export([handle/2]).
+-export([handle_validate/2, handle_post/3, handle/2]).
 -export([terminate/3]).
 -include("include/user.hrl").
 -include_lib("eunit/include/eunit.hrl").
 
-init(_Transport, Req, []) ->
-    {Method, Req2} = cowboy_req:method(Req),
-    {ok, Req2, [{method, Method}]}.
+init(_Transport, Req, State) ->
+    {ok, Req, State}.
 
-handle(Req, [{method, <<"POST">>}] = State) ->
+handle_validate(Req, State) ->
     ?debugVal(State),
     {ok, Qs, _Req2} = cowboy_req:body_qs(isucon3_config:max_post_size(), Req),
     ?debugVal(Qs),
@@ -18,11 +17,7 @@ handle(Req, [{method, <<"POST">>}] = State) ->
     ?debugVal(PasswordConfirm),
     Errors = isucon3_user:get_errors(User, PasswordConfirm),
     ?debugVal(Errors),
-    handle_post(Req, [{user, User} | State], Errors);
-handle(Req, State) ->
-    {ok, Body} = signup_dtl:render([]),
-    {ok, Req2} = cowboy_req:reply(200, [], Body, Req),
-    {ok, Req2, State}.
+    {Req, [{user, User} | State], Errors}.
 
 handle_post(Req, State, []) ->
     User = proplists:get_value(user, State),
@@ -39,6 +34,11 @@ handle_post(Req, State, Errors) ->
     {ok, Body} = signup_dtl:render(Q2),
     {ok, Req3} = cowboy_req:reply(200, [], Body, Req2),
     {ok, Req3, State}.
+
+handle(Req, State) ->
+    {ok, Body} = signup_dtl:render([]),
+    {ok, Req2} = cowboy_req:reply(200, [], Body, Req),
+    {ok, Req2, State}.
 
 terminate(_Reason, _Req, _State) ->
     ok.
