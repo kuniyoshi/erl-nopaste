@@ -33,6 +33,8 @@ protect_from(<<"POST">>, Req) ->
 protect_from(_Method, Req) ->
     Req.
 
+protect(_Code, _Headers, <<>>, Req) ->
+    Req;
 protect(200 = Code, Headers, Body, Req) ->
     {Cookie, Req2} = cowboy_req:cookie(isucon3_config:cookie(), Req),
     ?debugVal(Cookie),
