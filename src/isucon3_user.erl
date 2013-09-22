@@ -6,6 +6,7 @@
 -export([get_from_query/1]).
 -export([can_signin/2]).
 -export([get_user/1]).
+-export([expand/1]).
 -include("include/user.hrl").
 -include("include/session.hrl").
 -include_lib("eunit/include/eunit.hrl").
@@ -104,3 +105,8 @@ get_user(undefined) ->
     undefined;
 get_user(#session{user_id = UserId}) ->
     sanitize_user(isucon3_db:q(dirty_read, [user, UserId])).
+
+expand(undefined) ->
+    [];
+expand(User) when is_record(User, user) ->
+    [{username, User#user.username}].
