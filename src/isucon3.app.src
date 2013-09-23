@@ -10,6 +10,7 @@
                      mimetypes,
                      erlydtl,
                      mnesia,
-                     server_status]},
+                     server_status,
+                     log_funnel]},
      {mod, {isucon3_app, []}},
      {env, []}]}.

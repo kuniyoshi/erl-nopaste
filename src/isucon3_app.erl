@@ -4,6 +4,7 @@
 
 start(_Type, _Args) ->
     pong = net_adm:ping(isucon3_config:db_node()),
+    ok = log_funnel_client:open(isucon3_config:access_log()),
     Dispatch = cowboy_router:compile([{'_',
                                        [{"/static/[...]",
                                          cowboy_static,
@@ -19,7 +20,7 @@ start(_Type, _Args) ->
                                 [{env, [{dispatch, Dispatch}]},
                                  {middlewares, [cowboy_router, cowboy_handler, isucon3_access_log]},
                                  {onrequest, fun isucon3_onrequest:chain/1},
-                                 {onresponse, fun isucon3_acsrf:protect/4}]),
+                                 {onresponse, fun isucon3_onresponse:chain/4}]),
     isucon3_sup:start_link().
 
 stop(_State) ->

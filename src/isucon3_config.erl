@@ -6,7 +6,8 @@
          max_post_size/0,
          hostname/0,
          db_node/0,
-         lifetime/0]).
+         lifetime/0,
+         access_log/0]).
 
 get(Key) -> apply(?MODULE, Key, []).
 
@@ -17,3 +18,4 @@ max_post_size() -> 65536.
 hostname()      -> <<"localhost">>.
 db_node()       -> 'db@127.0.0.1'.
 lifetime()      -> 3 * 24 * 60 * 60.
+access_log()    -> "/tmp/access.log".
