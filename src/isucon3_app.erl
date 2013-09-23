@@ -17,7 +17,8 @@ start(_Type, _Args) ->
                                 isucon3_config:child(),
                                 [{port, isucon3_config:port()}],
                                 [{env, [{dispatch, Dispatch}]},
-                                 {onrequest, fun isucon3_acsrf:protect/1},
+                                 {middlewares, [cowboy_router, cowboy_handler, isucon3_access_log]},
+                                 {onrequest, fun isucon3_onrequest:chain/1},
                                  {onresponse, fun isucon3_acsrf:protect/4}]),
     isucon3_sup:start_link().
 

@@ -9,6 +9,7 @@
                      cowboy,
                      mimetypes,
                      erlydtl,
-                     mnesia]},
+                     mnesia,
+                     server_status]},
      {mod, {isucon3_app, []}},
      {env, []}]}.
