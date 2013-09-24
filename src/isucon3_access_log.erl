@@ -6,7 +6,6 @@
 to_string(undefined, _Atom) ->
     "undefined";
 to_string(Ip, ip_address) ->
-    ?debugVal(Ip),
     string:join([integer_to_list(X) || X <- tuple_to_list(Ip)], ".");
 to_string(Now, started_at) ->
     {Ymd, Hms} = calendar:now_to_local_time(Now),
@@ -18,7 +17,6 @@ format_access_log(Req) ->
     {{Ip, _Port}, _Req} = cowboy_req:peer(Req),
     State = server_status_client:my_state(),
     StartedAt = server_status_client:started_at(State),
-    ?debugVal(StartedAt),
     {Method, _Req} = cowboy_req:method(Req),
     {Path, _Req} = cowboy_req:path(Req),
     {Qs, _Req} = cowboy_req:qs(Req),
@@ -35,9 +33,6 @@ format_access_log(Req) ->
     {Referrer, _Req} = cowboy_req:header(<<"referer">>, Req, <<"undefined">>),
     {Agent, _Req} = cowboy_req:header(<<"user-agent">>, Req, <<"undefined">>),
     Us = server_status_client:wall_clock_us(State),
-    ?debugVal(Path),
-    ?debugVal(Qs),
-    ?debugVal(<<Path/binary, Qs/binary>>),
     string:join([pid_to_list(Pid),
                  to_string(Ip, ip_address),
                  to_string(StartedAt, started_at),
