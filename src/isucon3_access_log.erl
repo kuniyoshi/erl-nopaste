@@ -21,17 +21,28 @@ format_access_log(Req) ->
     ?debugVal(StartedAt),
     {Method, _Req} = cowboy_req:method(Req),
     {Path, _Req} = cowboy_req:path(Req),
+    {Qs, _Req} = cowboy_req:qs(Req),
+    Qs2 = case Qs of
+        <<>> ->
+            <<>>;
+        _ ->
+            Question = <<"?">>,
+            <<Question/binary, Qs/binary>>
+    end,
     {Version, _Req} = cowboy_req:version(Req),
     Code = server_status_client:code(State),
     %% It is hard to get transfered bytes, skip this.
     {Referrer, _Req} = cowboy_req:header(<<"referer">>, Req, <<"undefined">>),
     {Agent, _Req} = cowboy_req:header(<<"user-agent">>, Req, <<"undefined">>),
     Us = server_status_client:wall_clock_us(State),
+    ?debugVal(Path),
+    ?debugVal(Qs),
+    ?debugVal(<<Path/binary, Qs/binary>>),
     string:join([pid_to_list(Pid),
                  to_string(Ip, ip_address),
                  to_string(StartedAt, started_at),
                  binary_to_list(Method),
-                 binary_to_list(Path),
+                 binary_to_list(<<Path/binary, Qs2/binary>>),
                  atom_to_list(Version),
                  integer_to_list(Code),
                  binary_to_list(Referrer),
