@@ -1,4 +1,4 @@
 -record(session,
-        {id,
-         user_id,
-         lives_until}).
+        {id :: integer(),
+         user_id :: integer(),
+         lives_until :: integer()}).

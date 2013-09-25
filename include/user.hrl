@@ -1,4 +1,4 @@
 -record(user,
-        {id,
-         username,
-         password}).
+        {id :: integer(),
+         username :: list(),
+         password :: binary()}).
