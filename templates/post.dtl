@@ -1,0 +1,25 @@
+{% extends "base.dtl" %}
+
+{% block content %}
+<div class="container-fluid">
+	<div class="row-fluid">
+		{% include "sidebar.dtl" %}
+		<div class="span9">
+			<div class="hero-unit">
+				<div>
+					<p>by {{ post.username }} at {{ post.created_at }}</p>
+					<form action="/star/{{ post.id }}" method="post">
+						{% if username %}
+							<button class="btn btn-primary" id="add_star"><i class="icon-star icon-white"></i>＋</button>
+						{% else %}
+							<a href="/signin" class="btn">sign in to add Star</a>
+						{% endif %}
+						{% if post.stars > 0 %}<i class="icon-star"></i>{{ post.stars }}{% endif %}
+						<pre>{{ post.content }}</pre>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
