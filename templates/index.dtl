@@ -9,11 +9,11 @@
 				<h2>NoPaste!!</h2>
 					{% if username %}
 					<form action="/post" method="post">
-						<div class="control-group{% if error %} error{% endif %}">
+						<div class="control-group{% if errors %} error{% endif %}">
 							<textarea style="width: 90%; height: 300px;" name="content"></textarea>
 						{% for error in errors %}
 						<span class="help-inline">
-							{% if error == "NOT_NULL" %}Required{% endif %}
+							{% if error == "not_null" %}Required{% endif %}
 						</span>
 						{% endfor %}
 						</div>
