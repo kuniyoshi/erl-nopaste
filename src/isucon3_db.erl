@@ -3,10 +3,12 @@
 -export([add_user/1]).
 -export([add_session/1]).
 -export([add_post/1]).
+-export([count_star/1]).
 -include("include/user.hrl").
 -include("include/session.hrl").
 -include("include/autoincrement.hrl").
 -include("include/post.hrl").
+-include("include/star.hrl").
 -include_lib("eunit/include/eunit.hrl").
 
 q(FunName, Args) ->
@@ -24,3 +26,8 @@ add_session(Session) when is_record(Session, session) ->
 add_post(Post) when is_record(Post, post) ->
     Transaction = isucon3_transaction:add_post(Post),
     ok = q(activity, [transaction, Transaction]).
+
+count_star(Post) when is_record(Post, post) ->
+    Stars = q(dirty_index_read, [star, Post#post.id, #star.post_id]),
+    Stars2 = [S || S <- Stars, S#star.user_id =:= Post#post.user_id],
+    length(Stars2).
