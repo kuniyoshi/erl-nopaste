@@ -13,6 +13,7 @@ start(_Type, _Args) ->
                                         {"/signin", isucon3_handler, [signin_handler, []]},
                                         {"/signup", isucon3_handler, [signup_handler, []]},
                                         {"/", isucon3_handler, [index_handler, []]},
+                                        {"/post", isucon3_handler, [post_handler, []]},
                                         {"/index.html", isucon3_handler, [index_handler, []]}]}]),
     {ok, _} = cowboy:start_http(http,
                                 isucon3_config:child(),
