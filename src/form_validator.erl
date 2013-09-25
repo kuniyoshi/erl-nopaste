@@ -3,6 +3,7 @@
 
 not_null([])        -> false;
 not_null(undefined) -> false;
+not_null(<<>>)      -> false;
 not_null(_Name)     -> true.
 
 semi_ascii(undefined) ->
