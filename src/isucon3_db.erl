@@ -2,6 +2,7 @@
 -export([q/2]).
 -export([add_user/1]).
 -export([add_session/1]).
+-export([delete_session/1]).
 -export([add_post/1]).
 -export([count_star/1]).
 -include("include/user.hrl").
@@ -21,6 +22,11 @@ add_user(User) when is_record(User, user) ->
 
 add_session(Session) when is_record(Session, session) ->
     Transaction = isucon3_transaction:add_session(Session),
+    ok = q(activity, [transaction, Transaction]).
+
+delete_session(SessionId) ->
+    io:format("SessionId:\t~p~n", [SessionId]),
+    Transaction = isucon3_transaction:delete_session(SessionId),
     ok = q(activity, [transaction, Transaction]).
 
 add_post(Post) when is_record(Post, post) ->

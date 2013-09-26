@@ -3,6 +3,7 @@
 -export([id_to_cookie/1]).
 -export([signin/2]).
 -export([get_session/1]).
+-export([expire/1]).
 -include("user.hrl").
 -include("session.hrl").
 -define(MAX_RANDOM_NUMBER, 10000000000000000).
@@ -56,3 +57,8 @@ get_session(Req) ->
     {Cookie, _Req2} = cowboy_req:cookie(isucon3_config:cookie(), Req),
     ?debugVal(Cookie),
     sanitize_session(isucon3_db:q(dirty_read, [session, Cookie])).
+
+expire(Req) ->
+    {Cookie, _Req} = cowboy_req:cookie(isucon3_config:cookie(), Req),
+    ?debugVal(Cookie),
+    isucon3_db:delete_session(Cookie).

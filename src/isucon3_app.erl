@@ -12,6 +12,7 @@ start(_Type, _Args) ->
                                           {mimetypes, {fun mimetypes:path_to_mimes/2, default}}]},
                                         {"/signin", isucon3_handler, [signin_handler, []]},
                                         {"/signup", isucon3_handler, [signup_handler, []]},
+                                        {"/signout", isucon3_handler, [signout_handler, []]},
                                         {"/", isucon3_handler, [index_handler, []]},
                                         {"/post", isucon3_handler, [post_handler, []]},
                                         {"/post/:post_id", isucon3_handler, [post_handler, []]},

@@ -1,6 +1,7 @@
 -module(isucon3_transaction).
 -export([add_user/1]).
 -export([add_session/1]).
+-export([delete_session/1]).
 -export([add_post/1]).
 -include("include/user.hrl").
 -include("include/session.hrl").
@@ -18,6 +19,11 @@ add_user(User) when is_record(User, user) ->
 add_session(Session) when is_record(Session, session) ->
     fun() ->
             ok = mnesia:write(Session)
+    end.
+
+delete_session(SessionId) ->
+    fun() ->
+            ok = mnesia:delete({session, SessionId})
     end.
 
 add_post(Post) when is_record(Post, post) ->
