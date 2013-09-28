@@ -17,9 +17,12 @@ handle_validate(Req, State) ->
     {PostId, Req2} = cowboy_req:binding(post_id, Req),
     ?debugVal(PostId),
     Posts = isucon3_db:q(dirty_read, [post, binary_to_integer(PostId)]),
+    ?debugVal(Posts),
     {Req2, State, Posts}.
 
 handle_post(Req, State, []) ->
+    ?debugMsg("handle_post"),
+    ?debugMsg("empty"),
     {ok, Req2} = cowboy_req:reply(404, [], <<>>, Req),
     {ok, Req2, State};
 handle_post(Req, State, [Post]) when is_record(Post, post) ->
@@ -27,12 +30,17 @@ handle_post(Req, State, [Post]) when is_record(Post, post) ->
     ?debugVal(Post),
     User = proplists:get_value(user, State),
     ?debugVal(User),
-    ok = isucon3_star:increment(Post, User),
+    ok = isucon3_star:add(Post, User),
+    ?debugMsg("isucon3_star:add(Post, User)"),
+    Location = isucon3_url:url_for(list_to_binary(io_lib:format("/post/~w", [Post#post.id]))),
+    ?debugVal(Location),
     {ok, Req2} = cowboy_req:reply(302,
-                                  [{<<"location">>,
-                                    isucon3_url:url_for(list_to_binary(io_lib:format("/post/~w", [Post#post.id])))}],
+                                  [{<<"location">>, Location},
+                                   {<<"cache-control">>, <<"no-cache">>}],
                                   [],
                                   Req),
+    ?debugMsg("isucon3_star:add(Post, User)"),
+    ?debugVal(Req2),
     {ok, Req2, State}.
 
 terminate(_Reason, _Req, _State) ->

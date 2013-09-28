@@ -5,6 +5,7 @@
 -export([delete_session/1]).
 -export([add_post/1]).
 -export([count_star/1]).
+-export([add_star/2]).
 -include("include/user.hrl").
 -include("include/session.hrl").
 -include("include/autoincrement.hrl").
@@ -35,5 +36,8 @@ add_post(Post) when is_record(Post, post) ->
 
 count_star(Post) when is_record(Post, post) ->
     Stars = q(dirty_index_read, [star, Post#post.id, #star.post_id]),
-    Stars2 = [S || S <- Stars, S#star.user_id =:= Post#post.user_id],
-    length(Stars2).
+    length(Stars).
+
+add_star(Post, User) when is_record(Post, post), is_record(User, user) ->
+    Transaction = isucon3_transaction:add_star(Post, User),
+    ok = q(activity, [transaction, Transaction]).
