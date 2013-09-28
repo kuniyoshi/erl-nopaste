@@ -7,7 +7,7 @@
 		<div class="span9">
 			<div class="hero-unit">
 				<h2>NoPaste!!</h2>
-					{% if username %}
+					{% if user.username %}
 					<form action="/post" method="post">
 						<div class="control-group{% if errors %} error{% endif %}">
 							<textarea style="width: 90%; height: 300px;" name="content"></textarea>

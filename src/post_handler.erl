@@ -61,7 +61,7 @@ handle_get(Req, State, UserParams, [Post]) ->
     PostParams = isucon3_post:expand(Post),
     ?debugVal(UserParams),
     ?debugVal(PostParams),
-    {ok, Body} = post_dtl:render(UserParams ++ [{post, PostParams}]),
+    {ok, Body} = post_dtl:render([{user, UserParams}, {post, PostParams}]),
     {ok, Req2} = cowboy_req:reply(200, [], Body, Req),
     {ok, Req2, State}.
 

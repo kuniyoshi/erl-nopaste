@@ -9,7 +9,7 @@
 				<div>
 					<p>by {{ post.username }} at {{ post.created_at }}</p>
 					<form action="/star/{{ post.id }}" method="post">
-						{% if username %}
+						{% if user.username %}
 							<button class="btn btn-primary" id="add_star"><i class="icon-star icon-white"></i>＋</button>
 						{% else %}
 							<a href="/signin" class="btn">sign in to add Star</a>

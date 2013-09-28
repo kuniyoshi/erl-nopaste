@@ -30,8 +30,8 @@
 					<a class="brand" href="/">NoPaste</a>
 					<div class="nav-collapse collapse">
 						<p class="navbar-text pull-right">
-						{% if username %}
-							Logged in as {{ username }}
+						{% if user.username %}
+							Logged in as {{ user.username }}
 							<a href="/signout" class="btn btn-inverse btn-small">Sign out</a>
 						{% else %}
 							<a href="/signin" class="btn btn-primary btn-small">Sign in</a>
