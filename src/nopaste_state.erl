@@ -1,4 +1,4 @@
--module(isucon3_state).
+-module(nopaste_state).
 -export([working/1]).
 
 working(Req) ->

@@ -1,4 +1,4 @@
-PROJECT = isucon3
+PROJECT = nopaste
 
 DEPS = cowboy mimetypes erlydtl server_status log_funnel
 dep_cowboy = pkg://cowboy master

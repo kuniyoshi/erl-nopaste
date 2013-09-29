@@ -1,8 +1,8 @@
--module(isucon3_star).
+-module(nopaste_star).
 -export([add/2]).
 -include("user.hrl").
 -include("post.hrl").
 -include("star.hrl").
 
 add(Post, User) ->
-    ok = isucon3_db:add_star(Post, User).
+    ok = nopaste_db:add_star(Post, User).

@@ -1,4 +1,4 @@
--module(isucon3_handler).
+-module(nopaste_handler).
 -export([init/3]).
 -export([handle/2]).
 -export([terminate/3]).
@@ -6,9 +6,9 @@
 
 init(Transport, Req, [Module, [] = Args]) ->
     {Method, Req2} = cowboy_req:method(Req),
-    Session = isucon3_session:get_session(Req),
+    Session = nopaste_session:get_session(Req),
     ?debugVal(Session),
-    User = isucon3_user:get_user(Session),
+    User = nopaste_user:get_user(Session),
     ?debugVal(User),
     Args2 = [{module, Module}, {method, Method}, {user, User}],
     Args3 = lists:keymerge(1, Args, Args2),

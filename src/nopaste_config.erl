@@ -1,4 +1,4 @@
--module(isucon3_config).
+-module(nopaste_config).
 -export([get/1]).
 -export([cookie/0,
          port/0,
@@ -11,7 +11,7 @@
 
 get(Key) -> apply(?MODULE, Key, []).
 
-cookie()        -> <<"isucon3">>.
+cookie()        -> <<"nopaste">>.
 port()          -> 8080.
 child()         -> 100.
 max_post_size() -> 65536.

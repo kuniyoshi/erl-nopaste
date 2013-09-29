@@ -1,4 +1,4 @@
--module(isucon3_transaction).
+-module(nopaste_transaction).
 -export([add_user/1]).
 -export([add_session/1]).
 -export([delete_session/1]).

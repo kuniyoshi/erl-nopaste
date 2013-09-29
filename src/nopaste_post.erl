@@ -1,4 +1,4 @@
--module(isucon3_post).
+-module(nopaste_post).
 -export([expand/1]).
 -export([head/1]).
 -include("include/post.hrl").
@@ -28,7 +28,7 @@ username_from([#user{username = Username}]) ->
     Username.
 
 username(#post{user_id = UserId}) ->
-    Users = isucon3_db:q(dirty_read, [user, UserId]),
+    Users = nopaste_db:q(dirty_read, [user, UserId]),
     ?debugVal(Users),
     username_from(Users).
 
@@ -40,8 +40,8 @@ expand(Post) when is_record(Post, post) ->
     Params2 = lists:keystore(created_at, 1, Params, {created_at, to_string(CreatedAt)}),
     Headline = headline(Post#post.content),
     Params3 = lists:keystore(headline, 1, Params2, {headline, Headline}),
-    Stars = isucon3_db:count_star(Post),
+    Stars = nopaste_db:count_star(Post),
     [{username, username(Post)} | [{stars, Stars} | Params3]].
 
 head(Count) ->
-    isucon3_db:head(Count, post).
+    nopaste_db:head(Count, post).

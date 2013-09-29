@@ -1,4 +1,4 @@
--module(isucon3_user).
+-module(nopaste_user).
 -export([no_duplicate/1]).
 -export([get_errors/2]).
 -export([new_from_query_string/1]).
@@ -19,7 +19,7 @@ get_field(password, #user{password = Ret})  -> Ret.
 no_duplicate(undefined) ->
     true;
 no_duplicate(Name) ->
-    case isucon3_db:q(dirty_index_read, [user, Name, username]) of
+    case nopaste_db:q(dirty_index_read, [user, Name, username]) of
         [] ->
             true;
         [_] ->
@@ -78,11 +78,11 @@ hmac(Data) ->
 
 add_user(User) when is_record(User, user) ->
     User2 = User#user{password = hmac(User#user.password)},
-    User3 = isucon3_db:add_user(User2),
+    User3 = nopaste_db:add_user(User2),
     User3.
 
 get_from_query(#user{username = Username}) ->
-    case isucon3_db:q(dirty_index_read, [user, Username, username]) of
+    case nopaste_db:q(dirty_index_read, [user, Username, username]) of
         [] ->
             undefined;
         [#user{} = User] ->
@@ -104,7 +104,7 @@ sanitize_user([User]) when is_record(User, user) ->
 get_user(undefined) ->
     undefined;
 get_user(#session{user_id = UserId}) ->
-    sanitize_user(isucon3_db:q(dirty_read, [user, UserId])).
+    sanitize_user(nopaste_db:q(dirty_read, [user, UserId])).
 
 expand(undefined) ->
     [];

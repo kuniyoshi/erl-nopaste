@@ -1,4 +1,4 @@
--module(isucon3_access_log).
+-module(nopaste_access_log).
 -behaviour(cowboy_middleware).
 -export([execute/2]).
 -include_lib("eunit/include/eunit.hrl").

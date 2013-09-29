@@ -1,4 +1,4 @@
--module(isucon3_string).
+-module(nopaste_string).
 -export([hex_from_dec/1]).
 
 hex_from_dec(Digit) when Digit >= 0 andalso Digit < 10 -> $0 + Digit;

@@ -1,4 +1,4 @@
--module(isucon3_sup).
+-module(nopaste_sup).
 -behaviour(supervisor).
 -export([start_link/0]).
 -export([init/1]).

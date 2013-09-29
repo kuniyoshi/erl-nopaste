@@ -8,23 +8,23 @@ init(_Transport, Req, State) ->
     {ok, Req, State}.
 
 handle_validate(Req, State) ->
-    {ok, Qs, _Req2} = cowboy_req:body_qs(isucon3_config:max_post_size(), Req),
-    User = isucon3_user:new_from_query_string(Qs),
-    User2 = isucon3_user:get_from_query(User),
+    {ok, Qs, _Req2} = cowboy_req:body_qs(nopaste_config:max_post_size(), Req),
+    User = nopaste_user:new_from_query_string(Qs),
+    User2 = nopaste_user:get_from_query(User),
     ?debugVal(User),
     ?debugVal(User2),
-    {Req, [{user, User2} | State], isucon3_user:can_signin(User2, User)}.
+    {Req, [{user, User2} | State], nopaste_user:can_signin(User2, User)}.
 
 handle_post(Req, State, true) ->
     User = proplists:get_value(user, State),
-    Req2 = isucon3_session:signin(User, Req),
+    Req2 = nopaste_session:signin(User, Req),
     {ok, Req3} = cowboy_req:reply(302,
-                                  [{<<"location">>, isucon3_url:url_for(<<"/">>)}],
+                                  [{<<"location">>, nopaste_url:url_for(<<"/">>)}],
                                   [],
                                   Req2),
     {ok, Req3, State};
 handle_post(Req, State, false) ->
-    {ok, Q, Req2} = cowboy_req:body_qs(isucon3_config:max_post_size(), Req),
+    {ok, Q, Req2} = cowboy_req:body_qs(nopaste_config:max_post_size(), Req),
     Q2 = [{login_error, incorrect} | Q],
     {ok, Body} = signin_dtl:render(Q2),
     {ok, Req3} = cowboy_req:reply(200, [], Body, Req2),

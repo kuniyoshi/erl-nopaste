@@ -1,31 +1,31 @@
--module(isucon3_app).
+-module(nopaste_app).
 -behaviour(application).
 -export([start/2, stop/1]).
 
 start(_Type, _Args) ->
-    pong = net_adm:ping(isucon3_config:db_node()),
-    ok = log_funnel_client:open(isucon3_config:access_log()),
+    pong = net_adm:ping(nopaste_config:db_node()),
+    ok = log_funnel_client:open(nopaste_config:access_log()),
     Dispatch = cowboy_router:compile([{'_',
                                        [{"/static/[...]",
                                          cowboy_static,
-                                         [{directory, {priv_dir, isucon3, []}},
+                                         [{directory, {priv_dir, nopaste, []}},
                                           {mimetypes, {fun mimetypes:path_to_mimes/2, default}}]},
-                                        {"/signin", isucon3_handler, [signin_handler, []]},
-                                        {"/signup", isucon3_handler, [signup_handler, []]},
-                                        {"/signout", isucon3_handler, [signout_handler, []]},
-                                        {"/", isucon3_handler, [index_handler, []]},
-                                        {"/post", isucon3_handler, [post_handler, []]},
-                                        {"/post/:post_id", isucon3_handler, [post_handler, []]},
-                                        {"/star/:post_id", isucon3_handler, [star_handler, []]},
-                                        {"/index.html", isucon3_handler, [index_handler, []]}]}]),
+                                        {"/signin", nopaste_handler, [signin_handler, []]},
+                                        {"/signup", nopaste_handler, [signup_handler, []]},
+                                        {"/signout", nopaste_handler, [signout_handler, []]},
+                                        {"/", nopaste_handler, [index_handler, []]},
+                                        {"/post", nopaste_handler, [post_handler, []]},
+                                        {"/post/:post_id", nopaste_handler, [post_handler, []]},
+                                        {"/star/:post_id", nopaste_handler, [star_handler, []]},
+                                        {"/index.html", nopaste_handler, [index_handler, []]}]}]),
     {ok, _} = cowboy:start_http(http,
-                                isucon3_config:child(),
-                                [{port, isucon3_config:port()}],
+                                nopaste_config:child(),
+                                [{port, nopaste_config:port()}],
                                 [{env, [{dispatch, Dispatch}]},
-                                 {middlewares, [cowboy_router, cowboy_handler, isucon3_access_log]},
-                                 {onrequest, fun isucon3_onrequest:chain/1},
-                                 {onresponse, fun isucon3_onresponse:chain/4}]),
-    isucon3_sup:start_link().
+                                 {middlewares, [cowboy_router, cowboy_handler, nopaste_access_log]},
+                                 {onrequest, fun nopaste_onrequest:chain/1},
+                                 {onresponse, fun nopaste_onresponse:chain/4}]),
+    nopaste_sup:start_link().
 
 stop(_State) ->
     ok.

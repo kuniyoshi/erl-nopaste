@@ -1,6 +1,6 @@
 {application,
-    isucon3,
-    [{description, "isucon3"},
+    nopaste,
+    [{description, "nopaste"},
      {vsn, "1"},
      {modules, []},
      {registered, []},
@@ -12,5 +12,5 @@
                      mnesia,
                      server_status,
                      log_funnel]},
-     {mod, {isucon3_app, []}},
+     {mod, {nopaste_app, []}},
      {env, []}]}.
