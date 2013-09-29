@@ -6,6 +6,7 @@
 -export([add_post/1]).
 -export([count_star/1]).
 -export([add_star/2]).
+-export([head/2]).
 -include("include/user.hrl").
 -include("include/session.hrl").
 -include("include/autoincrement.hrl").
@@ -41,3 +42,8 @@ count_star(Post) when is_record(Post, post) ->
 add_star(Post, User) when is_record(Post, post), is_record(User, user) ->
     Transaction = isucon3_transaction:add_star(Post, User),
     ok = q(activity, [transaction, Transaction]).
+
+head(Count, post) ->
+    Transaction = isucon3_transaction:head(Count, post),
+    Posts = q(activity, [transaction, Transaction]),
+    Posts.

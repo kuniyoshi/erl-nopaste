@@ -14,7 +14,11 @@ handle(Req, State) ->
     ?debugVal(User),
     UserPorpList = isucon3_user:expand(User),
     ?debugVal(UserPorpList),
-    {ok, Body} = index_dtl:render([{user, UserPorpList}]),
+    RecentPosts = isucon3_post:head(10),
+    ?debugVal(RecentPosts),
+    RecentPosts2 = [isucon3_post:expand(X) || X <- RecentPosts],
+    ?debugVal(RecentPosts2),
+    {ok, Body} = index_dtl:render([{user, UserPorpList}, {recent_posts, RecentPosts2}]),
     ?debugMsg(ok),
     {ok, Req2} = cowboy_req:reply(200, [], Body, Req),
     {ok, Req2, State}.
